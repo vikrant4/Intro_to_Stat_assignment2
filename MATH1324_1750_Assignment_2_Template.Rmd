@@ -1,0 +1,110 @@
+---
+title: "MATH1324 Assignment 2"
+subtitle: Modeling Body Measurements
+output:
+  html_document: default
+  html_notebook: default
+  pdf_document: default
+  word_document: default
+---
+
+## Student Details
+
+
+Vikrant Yadav (s3676697)
+
+
+## Problem Statement
+
+The aim of this report is to investigate if bitrochanteric diameter fits normal distribution in the data provided by [Heinz G, Peterson LJ, Johnson RW, Kerk CJ. 2003. Exploring Relationships in
+Body Dimensions. Journal of Statistics Education 11(2)](https://ww2.amstat.org/publications/jse/v11n2/datasets.heinz.html). If found to be normally distributed, we can calculate the probabilities for different values for bitrochanteric diameter.
+
+## Load Packages
+
+```{r, warning==FALSE}
+set.seed(367669)
+library(dplyr)
+library(ggplot2)
+
+```
+
+## Data
+
+Import the body measurements data and prepare it for analysis. Show your code.
+
+
+```{r}
+data <- read.csv("bdims.csv")
+data$sex <- factor(data$sex, levels = c(0, 1), labels = c("Female", "Male"))
+
+#Creating two data frames for male and female individuals
+data.male <- data %>% filter(sex == "Male")
+data.female <- data %>% filter(sex == "Female")
+```
+
+
+
+## Summary Statistics
+
+
+Calculate descriptive statistics (i.e., mean, median, standard deviation, first and third quarterly, interquartile range, minimum and maximum values) of the selected measurement grouped by sex.
+
+```{r}
+#Quartile, Minimum, Maximum and Mean values of bitrochanteric diameter in male
+summary(data.male$bit.di)
+#Interquartile range of bitrochanteric diameter in male
+IQR(data.male$bit.di)
+#Standard deviation in bitrochanteric diameter in male
+m.mean <- mean(data.male$bit.di)
+m.sd <- sd(data.male$bit.di)
+m.sd
+#Variance in bitrochanteric diameter in male
+var(data.male$bit.di)
+
+#Quartile, Minimum, Maximum and Mean values of bitrochanteric diameter in female
+summary(data.female$bit.di)
+#Interquartile range of bitrochanteric diameter in female
+IQR(data.female$bit.di)
+#Standard deviation in bitrochanteric diameter in male
+f.mean <- mean(data.female$bit.di)
+f.sd <- sd(data.female$bit.di)
+f.sd
+#Variance in bitrochanteric diameter in male
+var(data.female$bit.di)
+
+```
+
+
+
+
+## Distribution Fitting
+
+The distribution of bitrochanteric diameter in males is shown below. The mean value is `r m.mean` with a standard deviation of `r m.sd`. The mean value is displayed with a vertical solid gold line while the values of ±1 and ±2 standard deviation are displayed with a dashed lines. The normal distribution is shown by a solid red line. As it can be seen, the distributions fits nicely over a normal distribution curve.
+
+
+```{r}
+# Plotting histogram for bitrochanteric diameter in males
+g.male <- ggplot(data.male, aes(x = bit.di))
+g.male <- g.male + geom_histogram(binwidth = 1, color = "black", fill = "cornflowerblue", aes(y=..density..)) +
+  stat_function(fun=dnorm, color="red", args = list(mean=m.mean, sd=m.sd)) +
+  geom_vline(xintercept = c(m.mean, m.mean+m.sd, m.mean-m.sd, m.mean+2*m.sd, m.mean-2*m.sd), linetype = c("solid", rep("dashed", 4)), colour = c("gold", rep("gray21", 4)), lwd = c(2, rep(1, 4)))
+g.male + ggtitle("Distribution of  bitrochanteric diameter in males") + xlab(" Bitrochanteric diameter (in cm)") + ylab("Density")
+```
+
+
+The distribution of bitrochanteric diameter in females is shown below. The mean value is `r f.mean` with a standard deviation of `r f.sd`. We can see that the empirical distribution does not fit perfectly over the theoretical normal distribution but is quite close and it is safe to say that the distribution will exhibit properties of a normal distribution.
+```{r}
+# Plotting histogram for bitrochanteric diameter in females
+g.female <- ggplot(data.female, aes(x = bit.di))
+g.female <- g.female + geom_histogram(binwidth = 1, color = "black", fill = "cornflowerblue", aes(y=..density..)) +
+  stat_function(fun=dnorm, color="red", args = list(mean=f.mean, sd=f.sd)) +
+  geom_vline(xintercept = c(f.mean, f.mean+f.sd, f.mean-f.sd, f.mean+2*f.sd, f.mean-2*f.sd), linetype = c("solid", rep("dashed", 4)), colour = c("gold", rep("gray21", 4)), lwd = c(2, rep(1, 4)))
+g.female + ggtitle("Distribution of  bitrochanteric diameter in females") + xlab(" Bitrochanteric diameter (in cm)") + ylab("Density")
+
+```
+
+## Interpretation
+
+Founding on the two histograms above, it can be said that the bitrochanteric diameter follows a normal distribution over males and females. Using this knowledge we can calculate probabilities of having different values for  bitrochanteric diameter and it cal also be noted that the expected value of  bitrochanteric diameter in males is `r m.mean` and in females is `r f.mean`.
+
+
